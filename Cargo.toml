@@ -1,0 +1,14 @@
+[package]
+name = "dsotm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.13.0"
+bevy_rapier3d = { version = "0.25.0", features = [ "debug-render-3d" ] }
+
+[profile.dev.package.bevy_rapier3d]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
