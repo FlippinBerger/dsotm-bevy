@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 // marker component for the Player
 #[derive(Component)]
-struct Player;
+pub struct Player;
 
 pub struct PlayerPlugin;
 

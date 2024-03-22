@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 
+use crate::player::Player;
+use crate::state::GameState;
+
 const CAMERA_DISTANCE: f32 = 24.0;
 
 #[derive(Component)]
@@ -38,18 +41,57 @@ fn spawn_cameras(mut commands: Commands) {
 
 // press P to get into dev mode with a new camera you can move around
 // press spacebar to get back to main camera
-fn dev_camera(
+fn god_mode_toggle(
     mut main_cam_q: Query<(&mut Camera, &Transform), With<MainCamera>>,
     mut dev_cam_q: Query<(&mut Camera, &mut Transform), With<DevCamera>>,
     keys: Res<ButtonInput<KeyCode>>,
+    state: Res<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
+    // Run all of this off pressing the key code.
     if keys.just_pressed(KeyCode::KeyP) {
+        // get the 2 cameras and their transforms
         let (mut main, main_trans) = main_cam_q.single_mut();
-        main.is_active = !main.is_active;
-
         let (mut dev, mut dev_trans) = dev_cam_q.single_mut();
-        dev.is_active = true;
 
-        // set us into a dev mode game state
+        match state.get() {
+            GameState::GodMode => {
+                // set cameras back together and go back to main camera in Level Mode
+                next_state.set(GameState::Level);
+                *dev_trans = *main_trans;
+            }
+            _ => {
+                next_state.set(GameState::GodMode);
+            }
+        }
     }
+}
+
+fn dev_cam_move(
+    state: Res<State<GameState>>,
+    mut cam: Query<&mut Transform, With<DevCamera>>,
+    keys: Res<ButtonInput<KeyCode>>,
+) {
+    let curr_state = state.get();
+    if *curr_state != GameState::GodMode {
+        return;
+    }
+
+    // impl movement
+}
+
+fn main_cam_move(
+    state: Res<State<GameState>>,
+    mut cam: Query<&mut Transform, With<MainCamera>>,
+    player_trans: Query<&Transform, With<Player>>,
+) {
+    let curr_state = state.get();
+    if *curr_state != GameState::Level {
+        return;
+    }
+
+    let player_t = player_trans.single();
+    let mut cam_t = cam.single_mut();
+
+    cam_t.translation.x = player_t.translation.x;
 }
