@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::player::Player;
+use crate::player_controller::Player;
 use crate::state::GameState;
 
 const CAMERA_DISTANCE: f32 = 24.;
@@ -33,6 +33,10 @@ fn spawn_cameras(mut commands: Commands) {
 
     commands.spawn((
         Camera3dBundle {
+            camera: Camera {
+                is_active: false,
+                ..Default::default()
+            },
             transform: Transform::from_xyz(0.0, 0.0, CAMERA_DISTANCE)
                 .looking_at(Vec3::ZERO, Vec3::Y),
             ..Default::default()
@@ -115,5 +119,17 @@ fn main_cam_move(
     let player_t = player_trans.single();
     let mut cam_t = cam.single_mut();
 
-    cam_t.translation.x = player_t.translation.x;
+    cam_t.translation.x = cam_t.translation.x.lerp(player_t.translation.x, 0.2);
+
+    // let distance = player_t.translation.x - cam_t.translation.x;
+
+    // if distance.abs() > 2.0 {
+    //     if distance < 0. {
+    //         // implement easing here
+    //         // cam_t.translation.x = player_t.translation.x - 2.0;
+    //         cam_t.translation.x = cam_t.translation.x.lerp(player_t.translation.x - 2.0, 0.5);
+    //     } else {
+    //         cam_t.translation.x = cam_t.translation.x.lerp(player_t.translation.x + 2.0, 0.5);
+    //     }
+    // }
 }

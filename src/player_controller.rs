@@ -1,28 +1,21 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-// marker component for the Player
+const PLAYER_SPEED: f32 = 30.;
+
 #[derive(Component)]
 pub struct Player;
 
-const PLAYER_SPEED: f32 = 30.;
+pub struct PlayerControllerPlugin;
 
-pub struct PlayerPlugin;
-
-impl Plugin for PlayerPlugin {
+impl Plugin for PlayerControllerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_player)
+        app.add_systems(Startup, spawn_player_controller)
             .add_systems(Update, player_movement);
     }
 }
 
-fn spawn_player(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    // mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    println!("Spawning player");
-
+fn spawn_player_controller(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
     let shape = meshes.add(Capsule3d::default());
 
     commands.spawn((
@@ -30,7 +23,9 @@ fn spawn_player(
             mesh: shape,
             ..Default::default()
         },
-        RigidBody::Dynamic,
+        RigidBody::KinematicPositionBased,
+        Collider::ball(0.5),
+        KinematicCharacterController::default(),
         Player,
     ));
 }

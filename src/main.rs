@@ -4,6 +4,7 @@ use bevy_rapier3d::prelude::*;
 mod camera;
 mod planet;
 mod player;
+mod player_controller;
 mod state;
 
 fn main() {
@@ -16,7 +17,8 @@ fn main() {
         .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(camera::CameraPlugin)
         .add_plugins(planet::PlanetPlugin)
-        .add_plugins(player::PlayerPlugin)
+        // .add_plugins(player::PlayerPlugin)
+        .add_plugins(player_controller::PlayerControllerPlugin)
         .insert_resource(ClearColor(Color::BISQUE))
         .run();
 }
