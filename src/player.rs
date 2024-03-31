@@ -23,7 +23,8 @@ fn spawn_player(
 ) {
     println!("Spawning player");
 
-    let shape = meshes.add(Capsule3d::default());
+    // let shape = meshes.add(Capsule3d::default());
+    let shape = meshes.add(Sphere::default());
 
     commands.spawn((
         PbrBundle {
@@ -31,6 +32,13 @@ fn spawn_player(
             ..Default::default()
         },
         RigidBody::Dynamic,
+        Velocity {
+            linvel: Vec3::ZERO,
+            angvel: Vec3::ZERO,
+        },
+        Sleeping::disabled(),
+        Ccd::enabled(),
+        Collider::ball(0.5),
         Player,
     ));
 }
@@ -47,4 +55,8 @@ fn player_movement(
     if keys.pressed(KeyCode::KeyD) {
         player_t.translation.x += PLAYER_SPEED * time.delta_seconds();
     }
+}
+
+fn jump(mut player_q: Query<&mut Velocity, With<Player>>, keys: Res<ButtonInput<KeyCode>>) {
+    let mut vel = player_q.single_mut();
 }
